@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./53832_frontend/client
+      dockerfile: Dockerfile
+    ports:
+      - "53832:53832"
+    networks:
+      - app-network
+
+  auth:
+    build:
+      context: ./53832_backend/Auth
+      dockerfile: Dockerfile
+    ports:
+       - "55832:55832"
+    environment:
+      - PORT=55832   
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+  classrooms:
+    build:
+      context: ./53832_backend/Classrooms
+      dockerfile: Dockerfile
+    ports:
+      - "55833:55832"
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+  event-bus:
+    build:
+      context: ./53832_backend/event-bus
+      dockerfile: Dockerfile
+    ports:
+      - "55834:55832"
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+  post:
+    build:
+      context: ./53832_backend/Post
+      dockerfile: Dockerfile
+    ports:
+      - "55835:55832"
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    ports:
+       - "27017:27017" 
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
